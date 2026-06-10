@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamPlace Hotels — 160×600 — Cinematic Reveal</title>
+
+    <!-- 1. Google Studio Enabler SDK -->
+    <script src="https://s0.2mdn.net/ads/studio/Enabler.js"></script>
+
+    <!-- 2. GSAP desde CDN autorizado por Google Studio -->
+    <script src="https://s0.2mdn.net/ads/studio/cached_libs/gsap_3.14.2_min.js"></script>
+
+    <!-- 3. Tipografía corporativa -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&family=Montserrat:wght@600&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #000; }
+
+        #banner {
+            position: relative;
+            width: 160px;
+            height: 600px;
+            border: 1px solid #1a1a1a; /* Obligatorio por política de AdServer */
+            overflow: hidden;
+            visibility: hidden;
+            user-select: none;
+        }
+
+        /* ── Foto de fondo ─────────────────────────────────────── */
+        #bg-layer {
+            position: absolute;
+            inset: 0;
+            clip-path: inset(0 100% 0 0);
+            will-change: clip-path;
+        }
+
+        #hotel-bg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ── Gradiente superior para contraste del logo ────────── */
+        .logo-shadow {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, transparent 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* ── Logo dinámico del hotel — centrado (canvas estrecho) ─ */
+        #logo-container {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            width: 110px;
+            height: 62px;
+            z-index: 5;
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+
+        #hotel-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center top;
+        }
+
+        /* ── Barra de color inferior ───────────────────────────── */
+        #color-bar {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%;
+            height: 188px;
+            padding: 16px 14px 0;
+            transform: scaleY(0);
+            transform-origin: bottom center;
+            will-change: transform;
+            z-index: 3;
+        }
+
+        .hotel-name {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-weight: 400;
+            font-size: 7.5px;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.68);
+            margin-bottom: 7px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .headline {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 1.22;
+            color: #fff;
+            margin-bottom: 7px;
+        }
+
+        .subheadline {
+            font-family: 'Raleway', Arial, sans-serif;
+            font-weight: 400;
+            font-size: 10px;
+            line-height: 1.45;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* ── Botón CTA ─────────────────────────────────────────── */
+        #cta-btn {
+            position: absolute;
+            bottom: 16px;
+            left: 14px;
+            z-index: 11;
+            background: transparent;
+            border: 1.5px solid rgba(255, 255, 255, 0.85);
+            color: #fff;
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 600;
+            font-size: 7.5px;
+            letter-spacing: 0.17em;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            cursor: pointer;
+            transform: scale(0);
+            transform-origin: left center;
+            will-change: transform;
+            white-space: nowrap;
+        }
+
+        /* ── Capa de click general ─────────────────────────────── */
+        #bg-exit {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="banner">
+
+        <div id="bg-layer">
+            <img id="hotel-bg" src="" alt="">
+        </div>
+
+        <div class="logo-shadow"></div>
+
+        <div id="logo-container">
+            <img id="hotel-logo" src="" alt="">
+        </div>
+
+        <div id="color-bar">
+            <span class="hotel-name" id="hotel-name"></span>
+            <h2 class="headline" id="headline"></h2>
+            <p class="subheadline" id="subheadline"></p>
+        </div>
+
+        <button id="cta-btn"></button>
+
+        <div id="bg-exit"></div>
+
+    </div>
+
+    <script>
+        // ── Enabler: arranque e inicialización ───────────────────────────
+        window.onload = function () {
+            if (Enabler.isInitialized()) {
+                enablerInitHandler();
+            } else {
+                Enabler.addEventListener(studio.events.StudioEvent.INIT, enablerInitHandler);
+            }
+        };
+
+        function enablerInitHandler() {
+            if (Enabler.isVisible()) {
+                devDynamicContentInit();
+            } else {
+                Enabler.addEventListener(studio.events.StudioEvent.VISIBLE, devDynamicContentInit);
+            }
+        }
+
+        // ── DCO: lectura del perfil dinámico de Studio ───────────────────
+        function devDynamicContentInit() {
+            // NOTA: Reemplazar 'DreamPlace_Retargeting' por el nombre exacto del perfil en Google Studio
+            if (typeof dynamicContent !== 'undefined' && dynamicContent.DreamPlace_Retargeting) {
+                setupBannerContent(dynamicContent.DreamPlace_Retargeting[0]);
+            } else {
+                console.warn('Studio dynamic content no disponible — cargando datos de testing.');
+                setupBannerContent({
+                    Hotel_Name:     'Gran Tagoro',
+                    Hotel_Color:    '#E8823A',
+                    Hotel_Logo:     { Url: 'https://placehold.co/110x62/E8823A/ffffff?text=LOGO' },
+                    Background_Img: { Url: 'https://placehold.co/160x600/111827/ffffff?text=Hotel+Photo' },
+                    Headline:       'Tu escapada perfecta te espera',
+                    Subheadline:    'Lanzarote, frente al mar',
+                    CTA_Text:       'Reserva ahora',
+                    Landing_URL:    { Url: 'https://www.dreamplacehotels.com' }
+                });
+            }
+        }
+
+        // ── Montaje: inyección de datos y precarga de imagen crítica ─────
+        function setupBannerContent(data) {
+            document.getElementById('color-bar').style.background  = data.Hotel_Color;
+            document.getElementById('hotel-name').textContent      = data.Hotel_Name;
+            document.getElementById('headline').textContent        = data.Headline;
+            document.getElementById('subheadline').textContent     = data.Subheadline;
+            document.getElementById('cta-btn').textContent         = data.CTA_Text;
+            document.getElementById('hotel-logo').src              = data.Hotel_Logo.Url;
+
+            const bgImg = new Image();
+            bgImg.onload = function () {
+                document.getElementById('hotel-bg').src = bgImg.src;
+                document.getElementById('banner').style.visibility = 'visible';
+                setupExits(data);
+                initAnimations();
+            };
+            bgImg.src = data.Background_Img.Url;
+        }
+
+        // ── Exits: exitOverride obligatorio — nunca URLs fijas en código ──
+        function setupExits(data) {
+            const url = data.Landing_URL.Url;
+
+            document.getElementById('bg-exit').addEventListener('click', function () {
+                Enabler.exitOverride('Background_Click', url);
+            });
+
+            document.getElementById('cta-btn').addEventListener('click', function (e) {
+                e.stopPropagation();
+                Enabler.exitOverride('CTA_Click', url);
+            });
+        }
+
+        // ── Animaciones GSAP — secuencia máx. 15s (norma IAB) ───────────
+        function initAnimations() {
+            const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+
+            tl
+                // 1. Wipe fotográfico de izquierda a derecha
+                .to('#bg-layer', {
+                    clipPath: 'inset(0 0% 0 0)',
+                    duration: 1.7,
+                    ease: 'power3.inOut'
+                })
+                // 2. Barra de color emerge desde el borde inferior
+                .to('#color-bar', {
+                    scaleY: 1,
+                    duration: 0.58,
+                    ease: 'power3.out'
+                }, '-=0.55')
+                // 3. Logo desciende y aparece sobre la foto
+                .to('#logo-container', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.42
+                }, '-=0.35')
+                // 4. Nombre del hotel
+                .from('#hotel-name', {
+                    opacity: 0,
+                    y: 7,
+                    duration: 0.3
+                }, '-=0.1')
+                // 5. Headline principal
+                .from('#headline', {
+                    opacity: 0,
+                    y: 9,
+                    duration: 0.36
+                }, '-=0.05')
+                // 6. Subheadline
+                .from('#subheadline', {
+                    opacity: 0,
+                    y: 7,
+                    duration: 0.3
+                }, '-=0.1')
+                // 7. CTA — entrada con muelle de escala
+                .to('#cta-btn', {
+                    scale: 1,
+                    duration: 0.4,
+                    ease: 'back.out(1.5)'
+                }, '-=0.1')
+                // 8. Micro-pulsos del CTA sin loop infinito (norma IAB)
+                .to('#cta-btn', {
+                    scale: 1.06,
+                    repeat: 2,
+                    yoyo: true,
+                    duration: 0.22,
+                    delay: 0.9,
+                    ease: 'power1.inOut'
+                });
+        }
+    </script>
+</body>
+</html>
