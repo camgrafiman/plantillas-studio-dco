@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamPlace Hotels — 320×100 — Color Signature</title>
+    <script src="https://s0.2mdn.net/ads/studio/Enabler.js"></script>
+    <script src="https://s0.2mdn.net/ads/studio/cached_libs/gsap_3.14.2_min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&family=Montserrat:wght@600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #000; }
+        #banner { position: relative; width: 320px; height: 100px; border: 1px solid #1a1a1a; overflow: hidden; visibility: hidden; user-select: none; }
+        #bg-layer { position: absolute; inset: 0; }
+        #hotel-bg { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.06); transform-origin: center; will-change: transform; }
+        .logo-shadow { position: absolute; top: 0; left: 0; width: 120px; height: 100%; background: linear-gradient(90deg, rgba(0,0,0,0.48) 0%, transparent 100%); z-index: 2; pointer-events: none; }
+        #logo-container { position: absolute; top: 31px; left: 14px; width: 65px; height: 38px; z-index: 5; will-change: transform, opacity; }
+        #hotel-logo { width: 100%; height: 100%; object-fit: contain; object-position: left center; }
+        #color-panel { position: absolute; top: 0; right: 0; width: 118px; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 0 12px; will-change: transform; z-index: 3; }
+        .hotel-name { font-family: 'Raleway', Arial, sans-serif; font-weight: 400; font-size: 7px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.72); white-space: nowrap; overflow: hidden; margin-bottom: 5px; }
+        .separator { width: 100%; height: 1px; background: rgba(255,255,255,0.28); transform: scaleX(0); transform-origin: left center; will-change: transform; }
+        #cta-btn { position: absolute; right: 12px; bottom: 12px; z-index: 11; background: transparent; border: 1.5px solid rgba(255,255,255,0.85); color: #fff; font-family: 'Montserrat', Arial, sans-serif; font-weight: 600; font-size: 7px; letter-spacing: 0.14em; text-transform: uppercase; padding: 5px 10px; cursor: pointer; transform: scale(0); transform-origin: right center; will-change: transform; white-space: nowrap; }
+        #bg-exit { position: absolute; inset: 0; z-index: 10; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="banner">
+        <div id="bg-layer"><img id="hotel-bg" src="" alt=""></div>
+        <div class="logo-shadow"></div>
+        <div id="logo-container"><img id="hotel-logo" src="" alt=""></div>
+        <div id="color-panel">
+            <span class="hotel-name" id="hotel-name"></span>
+            <div class="separator" id="separator"></div>
+        </div>
+        <button id="cta-btn"></button>
+        <div id="bg-exit"></div>
+    </div>
+    <script>
+        window.onload = function () {
+            if (Enabler.isInitialized()) { enablerInitHandler(); }
+            else { Enabler.addEventListener(studio.events.StudioEvent.INIT, enablerInitHandler); }
+        };
+        function enablerInitHandler() {
+            if (Enabler.isVisible()) { devDynamicContentInit(); }
+            else { Enabler.addEventListener(studio.events.StudioEvent.VISIBLE, devDynamicContentInit); }
+        }
+        function devDynamicContentInit() {
+            // NOTA: Reemplazar 'DreamPlace_Retargeting' por el nombre exacto del perfil en Google Studio
+            if (typeof dynamicContent !== 'undefined' && dynamicContent.DreamPlace_Retargeting) {
+                setupBannerContent(dynamicContent.DreamPlace_Retargeting[0]);
+            } else {
+                setupBannerContent({ Hotel_Name: 'Gran Tagoro', Hotel_Color: '#E8823A', Hotel_Logo: { Url: 'https://placehold.co/65x38/E8823A/ffffff?text=LOGO' }, Background_Img: { Url: 'https://placehold.co/320x100/111827/ffffff?text=Hotel+Photo' }, CTA_Text: 'Reserva ahora', Landing_URL: { Url: 'https://www.dreamplacehotels.com' } });
+            }
+        }
+        function setupBannerContent(data) {
+            document.getElementById('color-panel').style.background = data.Hotel_Color;
+            document.getElementById('hotel-name').textContent = data.Hotel_Name;
+            document.getElementById('cta-btn').textContent = data.CTA_Text;
+            document.getElementById('hotel-logo').src = data.Hotel_Logo.Url;
+            const bgImg = new Image();
+            bgImg.onload = function () { document.getElementById('hotel-bg').src = bgImg.src; document.getElementById('banner').style.visibility = 'visible'; setupExits(data); initAnimations(); };
+            bgImg.src = data.Background_Img.Url;
+        }
+        function setupExits(data) {
+            const url = data.Landing_URL.Url;
+            document.getElementById('bg-exit').addEventListener('click', function () { Enabler.exitOverride('Background_Click', url); });
+            document.getElementById('cta-btn').addEventListener('click', function (e) { e.stopPropagation(); Enabler.exitOverride('CTA_Click', url); });
+        }
+        function initAnimations() {
+            gsap.set('#color-panel', { x: 118 });
+            gsap.set('#logo-container', { opacity: 0, x: -8 });
+            gsap.set('#hotel-name', { opacity: 0 });
+            const tl = gsap.timeline();
+            tl
+                .to('#hotel-bg', { scale: 1, duration: 2.2, ease: 'power1.inOut' }, 0)
+                .to('#color-panel', { x: 0, duration: 0.6, ease: 'power3.out' }, 0.3)
+                .to('#logo-container', { opacity: 1, x: 0, duration: 0.38, ease: 'power2.out' }, 0.3)
+                .to('#hotel-name', { opacity: 1, duration: 0.28, ease: 'power2.out' }, 1.0)
+                .to('#separator', { scaleX: 1, duration: 0.32, ease: 'power2.inOut' }, 1.2)
+                .to('#cta-btn', { scale: 1, duration: 0.36, ease: 'back.out(1.5)' }, 1.4)
+                .to('#cta-btn', { scale: 1.06, repeat: 2, yoyo: true, duration: 0.2, delay: 0.9, ease: 'power1.inOut' });
+        }
+    </script>
+</body>
+</html>
