@@ -29,7 +29,6 @@
             user-select: none;
         }
 
-        /* ── Foto de fondo ─────────────────────────────────────── */
         #bg-layer {
             position: absolute;
             inset: 0;
@@ -44,7 +43,6 @@
             display: block;
         }
 
-        /* ── Gradiente superior para contraste del logo ────────── */
         .logo-shadow {
             position: absolute;
             top: 0; left: 0;
@@ -55,7 +53,6 @@
             pointer-events: none;
         }
 
-        /* ── Logo dinámico del hotel — centrado en vertical ───── */
         #logo-container {
             position: absolute;
             top: 20px;
@@ -75,7 +72,6 @@
             object-position: center top;
         }
 
-        /* ── Barra de color inferior ───────────────────────────── */
         #color-bar {
             position: absolute;
             bottom: 0; left: 0;
@@ -117,7 +113,6 @@
             color: rgba(255, 255, 255, 0.82);
         }
 
-        /* ── Botón CTA ─────────────────────────────────────────── */
         #cta-btn {
             position: absolute;
             bottom: 18px;
@@ -139,7 +134,6 @@
             white-space: nowrap;
         }
 
-        /* ── Capa de click general ─────────────────────────────── */
         #bg-exit {
             position: absolute;
             inset: 0;
@@ -150,48 +144,27 @@
 </head>
 <body>
     <div id="banner">
-
-        <div id="bg-layer">
-            <img id="hotel-bg" src="" alt="">
-        </div>
-
+        <div id="bg-layer"><img id="hotel-bg" src="" alt=""></div>
         <div class="logo-shadow"></div>
-
-        <div id="logo-container">
-            <img id="hotel-logo" src="" alt="">
-        </div>
-
+        <div id="logo-container"><img id="hotel-logo" src="" alt=""></div>
         <div id="color-bar">
             <span class="hotel-name" id="hotel-name"></span>
             <h2 class="headline" id="headline"></h2>
             <p class="subheadline" id="subheadline"></p>
         </div>
-
         <button id="cta-btn"></button>
-
         <div id="bg-exit"></div>
-
     </div>
 
     <script>
-        // ── Enabler: arranque e inicialización ───────────────────────────
         window.onload = function () {
-            if (Enabler.isInitialized()) {
-                enablerInitHandler();
-            } else {
-                Enabler.addEventListener(studio.events.StudioEvent.INIT, enablerInitHandler);
-            }
+            if (Enabler.isInitialized()) { enablerInitHandler(); }
+            else { Enabler.addEventListener(studio.events.StudioEvent.INIT, enablerInitHandler); }
         };
-
         function enablerInitHandler() {
-            if (Enabler.isVisible()) {
-                devDynamicContentInit();
-            } else {
-                Enabler.addEventListener(studio.events.StudioEvent.VISIBLE, devDynamicContentInit);
-            }
+            if (Enabler.isVisible()) { devDynamicContentInit(); }
+            else { Enabler.addEventListener(studio.events.StudioEvent.VISIBLE, devDynamicContentInit); }
         }
-
-        // ── DCO: lectura del perfil dinámico de Studio ───────────────────
         function devDynamicContentInit() {
             // NOTA: Reemplazar 'DreamPlace_Retargeting' por el nombre exacto del perfil en Google Studio
             if (typeof dynamicContent !== 'undefined' && dynamicContent.DreamPlace_Retargeting) {
@@ -199,19 +172,14 @@
             } else {
                 console.warn('Studio dynamic content no disponible — cargando datos de testing.');
                 setupBannerContent({
-                    Hotel_Name:     'Gran Tagoro',
-                    Hotel_Color:    '#E8823A',
-                    Hotel_Logo:     { Url: 'https://placehold.co/95x72/E8823A/ffffff?text=LOGO' },
+                    Hotel_Name: 'Gran Tagoro', Hotel_Color: '#E8823A',
+                    Hotel_Logo: { Url: 'https://placehold.co/95x72/E8823A/ffffff?text=LOGO' },
                     Background_Img: { Url: 'https://placehold.co/300x600/111827/ffffff?text=Hotel+Photo' },
-                    Headline:       'Tu escapada perfecta te espera',
-                    Subheadline:    'Lanzarote, frente al mar',
-                    CTA_Text:       'Reserva ahora',
-                    Landing_URL:    { Url: 'https://www.dreamplacehotels.com' }
+                    Headline: 'Tu escapada perfecta te espera', Subheadline: 'Lanzarote, frente al mar',
+                    CTA_Text: 'Reserva ahora', Landing_URL: { Url: 'https://www.dreamplacehotels.com' }
                 });
             }
         }
-
-        // ── Montaje: inyección de datos y precarga de imagen crítica ─────
         function setupBannerContent(data) {
             document.getElementById('color-bar').style.background  = data.Hotel_Color;
             document.getElementById('hotel-name').textContent      = data.Hotel_Name;
@@ -219,87 +187,30 @@
             document.getElementById('subheadline').textContent     = data.Subheadline;
             document.getElementById('cta-btn').textContent         = data.CTA_Text;
             document.getElementById('hotel-logo').src              = data.Hotel_Logo.Url;
-
             const bgImg = new Image();
             bgImg.onload = function () {
                 document.getElementById('hotel-bg').src = bgImg.src;
                 document.getElementById('banner').style.visibility = 'visible';
-                setupExits(data);
-                initAnimations();
+                setupExits(data); initAnimations();
             };
             bgImg.src = data.Background_Img.Url;
         }
-
-        // ── Exits: exitOverride obligatorio — nunca URLs fijas en código ──
         function setupExits(data) {
             const url = data.Landing_URL.Url;
-
-            document.getElementById('bg-exit').addEventListener('click', function () {
-                Enabler.exitOverride('Background_Click', url);
-            });
-
-            document.getElementById('cta-btn').addEventListener('click', function (e) {
-                e.stopPropagation();
-                Enabler.exitOverride('CTA_Click', url);
-            });
+            document.getElementById('bg-exit').addEventListener('click', function () { Enabler.exitOverride('Background_Click', url); });
+            document.getElementById('cta-btn').addEventListener('click', function (e) { e.stopPropagation(); Enabler.exitOverride('CTA_Click', url); });
         }
-
-        // ── Animaciones GSAP — secuencia máx. 15s (norma IAB) ───────────
         function initAnimations() {
             const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
-
             tl
-                // 1. Wipe fotográfico de izquierda a derecha
-                .to('#bg-layer', {
-                    clipPath: 'inset(0 0% 0 0)',
-                    duration: 1.7,
-                    ease: 'power3.inOut'
-                })
-                // 2. Barra de color emerge desde el borde inferior
-                .to('#color-bar', {
-                    scaleY: 1,
-                    duration: 0.6,
-                    ease: 'power3.out'
-                }, '-=0.55')
-                // 3. Logo desciende y aparece sobre la foto
-                .to('#logo-container', {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.45
-                }, '-=0.4')
-                // 4. Nombre del hotel
-                .from('#hotel-name', {
-                    opacity: 0,
-                    y: 8,
-                    duration: 0.32
-                }, '-=0.1')
-                // 5. Headline principal
-                .from('#headline', {
-                    opacity: 0,
-                    y: 10,
-                    duration: 0.38
-                }, '-=0.05')
-                // 6. Subheadline
-                .from('#subheadline', {
-                    opacity: 0,
-                    y: 8,
-                    duration: 0.32
-                }, '-=0.1')
-                // 7. CTA — entrada con muelle de escala
-                .to('#cta-btn', {
-                    scale: 1,
-                    duration: 0.42,
-                    ease: 'back.out(1.5)'
-                }, '-=0.1')
-                // 8. Micro-pulsos del CTA sin loop infinito (norma IAB)
-                .to('#cta-btn', {
-                    scale: 1.06,
-                    repeat: 2,
-                    yoyo: true,
-                    duration: 0.22,
-                    delay: 0.9,
-                    ease: 'power1.inOut'
-                });
+                .to('#bg-layer', { clipPath: 'inset(0 0% 0 0)', duration: 1.7, ease: 'power3.inOut' })
+                .to('#color-bar', { scaleY: 1, duration: 0.6, ease: 'power3.out' }, '-=0.55')
+                .to('#logo-container', { opacity: 1, y: 0, duration: 0.45 }, '-=0.4')
+                .from('#hotel-name', { opacity: 0, y: 8, duration: 0.32 }, '-=0.1')
+                .from('#headline', { opacity: 0, y: 10, duration: 0.38 }, '-=0.05')
+                .from('#subheadline', { opacity: 0, y: 8, duration: 0.32 }, '-=0.1')
+                .to('#cta-btn', { scale: 1, duration: 0.42, ease: 'back.out(1.5)' }, '-=0.1')
+                .to('#cta-btn', { scale: 1.06, repeat: 2, yoyo: true, duration: 0.22, delay: 0.9, ease: 'power1.inOut' });
         }
     </script>
 </body>
