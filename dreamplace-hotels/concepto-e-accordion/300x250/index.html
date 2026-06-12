@@ -157,7 +157,9 @@
 
         #bg-exit {
             position: absolute;
-            inset: 0;
+            bottom: 0; left: 0;
+            width: 100%;
+            height: 70px;
             z-index: 10;
             cursor: pointer;
         }
@@ -293,13 +295,13 @@
 
         function setupExits(data) {
             var url = data.Landing_URL.Url;
-            // bg-exit cubre color-bar; los paneles del acordeón (z-index superior) tienen su propio handler
             document.getElementById('bg-exit').addEventListener('click', function () {
                 Enabler.exitOverride('Background_Click', url);
             });
-            panels.forEach(function(panel) {
+            var areaNames = ['Area_1_Click', 'Area_2_Click', 'Area_3_Click', 'Area_4_Click'];
+            panels.forEach(function(panel, i) {
                 panel.addEventListener('click', function() {
-                    Enabler.exitOverride('Background_Click', url);
+                    Enabler.exitOverride(areaNames[i], url);
                 });
             });
             document.getElementById('cta-btn').addEventListener('click', function (e) {

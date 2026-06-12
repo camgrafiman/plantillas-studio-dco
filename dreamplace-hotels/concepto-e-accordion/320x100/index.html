@@ -110,7 +110,7 @@
             width: 90px;
             height: 100%;
             background: linear-gradient(90deg, rgba(0,0,0,0.55) 0%, transparent 100%);
-            z-index: 4;
+            z-index: 12;
             pointer-events: none;
         }
 
@@ -120,9 +120,10 @@
             left: 10px;
             width: 60px;
             height: 38px;
-            z-index: 5;
+            z-index: 12;
             opacity: 0;
             will-change: opacity;
+            pointer-events: none;
         }
 
         #hotel-logo {
@@ -137,7 +138,7 @@
             position: absolute;
             right: 10px;
             bottom: 10px;
-            z-index: 12;
+            z-index: 13;
             background: transparent;
             border: 1.5px solid rgba(255,255,255,0.85);
             color: #fff;
@@ -155,10 +156,7 @@
         }
 
         #bg-exit {
-            position: absolute;
-            inset: 0;
-            z-index: 10;
-            cursor: pointer;
+            display: none;
         }
     </style>
 </head>
@@ -289,12 +287,10 @@
 
         function setupExits(data) {
             var url = data.Landing_URL.Url;
-            document.getElementById('bg-exit').addEventListener('click', function () {
-                Enabler.exitOverride('Background_Click', url);
-            });
-            panels.forEach(function(panel) {
+            var areaNames = ['Area_1_Click', 'Area_2_Click', 'Area_3_Click', 'Area_4_Click'];
+            panels.forEach(function(panel, i) {
                 panel.addEventListener('click', function() {
-                    Enabler.exitOverride('Background_Click', url);
+                    Enabler.exitOverride(areaNames[i], url);
                 });
             });
             document.getElementById('cta-btn').addEventListener('click', function (e) {
