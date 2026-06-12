@@ -157,7 +157,9 @@
 
         #bg-exit {
             position: absolute;
-            inset: 0;
+            bottom: 0; left: 0;
+            width: 100%;
+            height: 70px;
             z-index: 10;
             cursor: pointer;
         }
@@ -208,9 +210,9 @@
     <script>
         var ACCORDION_H = 180;
         var NUM_PANELS  = 4;
-        var DEFAULT_H   = ACCORDION_H / NUM_PANELS;
+        var DEFAULT_H   = ACCORDION_H / NUM_PANELS;   // 45
         var EXPANDED_H  = 111;
-        var COMPACT_H   = (ACCORDION_H - EXPANDED_H) / (NUM_PANELS - 1);
+        var COMPACT_H   = (ACCORDION_H - EXPANDED_H) / (NUM_PANELS - 1); // 23
 
         var panels      = Array.from(document.querySelectorAll('.panel'));
         var accordion   = document.getElementById('accordion');
@@ -296,9 +298,10 @@
             document.getElementById('bg-exit').addEventListener('click', function () {
                 Enabler.exitOverride('Background_Click', url);
             });
-            panels.forEach(function(panel) {
+            var areaNames = ['Area_1_Click', 'Area_2_Click', 'Area_3_Click', 'Area_4_Click'];
+            panels.forEach(function(panel, i) {
                 panel.addEventListener('click', function() {
-                    Enabler.exitOverride('Background_Click', url);
+                    Enabler.exitOverride(areaNames[i], url);
                 });
             });
             document.getElementById('cta-btn').addEventListener('click', function (e) {

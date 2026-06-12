@@ -25,6 +25,7 @@
             user-select: none;
         }
 
+        /* ── Acordeón horizontal — ocupa todo el banner ── */
         #accordion {
             position: absolute;
             inset: 0;
@@ -60,6 +61,10 @@
             pointer-events: none;
         }
 
+        /*
+         * Indicador activo: barra horizontal en la parte superior (acordeón horizontal).
+         * Color se inyecta desde JS con data.Hotel_Color.
+         */
         .active-bar {
             position: absolute;
             top: 0; left: 0;
@@ -93,13 +98,19 @@
             text-overflow: ellipsis;
         }
 
+        /*
+         * Logo y nombre del hotel superpuestos sobre el primer panel.
+         * Gradiente izquierda → derecha para contraste del logo.
+         * Logo: top: 31px = (100px - 38px) / 2. Límite derecho: 10+60=70px. Sin colisión
+         * con panel activo (mínimo 80px de ancho incluso en estado compacto).
+         */
         #logo-shadow {
             position: absolute;
             top: 0; left: 0;
             width: 90px;
             height: 100%;
             background: linear-gradient(90deg, rgba(0,0,0,0.55) 0%, transparent 100%);
-            z-index: 4;
+            z-index: 12;
             pointer-events: none;
         }
 
@@ -109,9 +120,10 @@
             left: 10px;
             width: 60px;
             height: 38px;
-            z-index: 5;
+            z-index: 12;
             opacity: 0;
             will-change: opacity;
+            pointer-events: none;
         }
 
         #hotel-logo {
@@ -121,11 +133,12 @@
             object-position: left center;
         }
 
+        /* ── CTA — esquina inferior derecha ── */
         #cta-btn {
             position: absolute;
             right: 10px;
             bottom: 10px;
-            z-index: 12;
+            z-index: 13;
             background: transparent;
             border: 1.5px solid rgba(255,255,255,0.85);
             color: #fff;
@@ -143,10 +156,7 @@
         }
 
         #bg-exit {
-            position: absolute;
-            inset: 0;
-            z-index: 10;
-            cursor: pointer;
+            display: none;
         }
     </style>
 </head>
@@ -180,6 +190,7 @@
             </div>
         </div>
 
+        <!-- Logo superpuesto sobre acordeón -->
         <div id="logo-shadow"></div>
         <div id="logo-container">
             <img id="hotel-logo" src="" alt="">
@@ -193,9 +204,9 @@
     <script>
         var ACCORDION_W = 320;
         var NUM_PANELS  = 4;
-        var DEFAULT_W   = 80;
+        var DEFAULT_W   = 80;    // 4 × 80 = 320
         var EXPANDED_W  = 155;
-        var COMPACT_W   = (ACCORDION_W - EXPANDED_W) / (NUM_PANELS - 1);
+        var COMPACT_W   = (ACCORDION_W - EXPANDED_W) / (NUM_PANELS - 1); // 55
 
         var panels      = Array.from(document.querySelectorAll('.panel'));
         var accordion   = document.getElementById('accordion');
@@ -276,12 +287,10 @@
 
         function setupExits(data) {
             var url = data.Landing_URL.Url;
-            document.getElementById('bg-exit').addEventListener('click', function () {
-                Enabler.exitOverride('Background_Click', url);
-            });
-            panels.forEach(function(panel) {
+            var areaNames = ['Area_1_Click', 'Area_2_Click', 'Area_3_Click', 'Area_4_Click'];
+            panels.forEach(function(panel, i) {
                 panel.addEventListener('click', function() {
-                    Enabler.exitOverride('Background_Click', url);
+                    Enabler.exitOverride(areaNames[i], url);
                 });
             });
             document.getElementById('cta-btn').addEventListener('click', function (e) {

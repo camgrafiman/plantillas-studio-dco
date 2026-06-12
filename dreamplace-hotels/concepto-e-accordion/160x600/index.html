@@ -158,7 +158,9 @@
 
         #bg-exit {
             position: absolute;
-            inset: 0;
+            bottom: 0; left: 0;
+            width: 100%;
+            height: 110px;
             z-index: 10;
             cursor: pointer;
         }
@@ -211,7 +213,7 @@
         var NUM_PANELS  = 4;
         var DEFAULT_H   = 122;
         var EXPANDED_H  = 280;
-        var COMPACT_H   = (ACCORDION_H - EXPANDED_H) / (NUM_PANELS - 1);
+        var COMPACT_H   = (ACCORDION_H - EXPANDED_H) / (NUM_PANELS - 1); // ~70
 
         var panels      = Array.from(document.querySelectorAll('.panel'));
         var accordion   = document.getElementById('accordion');
@@ -297,9 +299,10 @@
             document.getElementById('bg-exit').addEventListener('click', function () {
                 Enabler.exitOverride('Background_Click', url);
             });
-            panels.forEach(function(panel) {
+            var areaNames = ['Area_1_Click', 'Area_2_Click', 'Area_3_Click', 'Area_4_Click'];
+            panels.forEach(function(panel, i) {
                 panel.addEventListener('click', function() {
-                    Enabler.exitOverride('Background_Click', url);
+                    Enabler.exitOverride(areaNames[i], url);
                 });
             });
             document.getElementById('cta-btn').addEventListener('click', function (e) {
@@ -328,6 +331,11 @@
         }
 
         function showCTA() {
+            /*
+             * 160px canvas: CTA centrado con translateX(-50%).
+             * GSAP no puede animar scale directamente en un elemento con translateX fijo en CSS.
+             * Usamos gsap.set para combinar ambas transformaciones con xPercent.
+             */
             gsap.set('#cta-btn', { xPercent: -50, scale: 0 });
             gsap.to('#cta-btn',  { scale: 1, duration: 0.42, ease: 'back.out(1.5)' });
             gsap.to('#cta-btn',  { scale: 1.06, repeat: 2, yoyo: true, duration: 0.22, delay: 0.9, ease: 'power1.inOut' });
