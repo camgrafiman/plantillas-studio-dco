@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOXAM — 728×90 — Product Spotlight v3</title>
+    <script src="https://s0.2mdn.net/ads/studio/Enabler.js"></script>
+    <script src="https://s0.2mdn.net/ads/studio/cached_libs/gsap_3.14.2_min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #000; }
+        #banner { position: relative; width: 728px; height: 90px; background: #111111; border: 1px solid #2a2a2a; overflow: hidden; visibility: hidden; user-select: none; font-family: 'Montserrat', Arial, sans-serif; }
+        #banner::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 55% 50%, rgba(232,17,45,0.07) 0%, transparent 60%); z-index: 0; pointer-events: none; }
+        #accent-strip { position: absolute; left: 0; top: 0; width: 100%; height: 4px; background: #E8112D; z-index: 2; transform-origin: left center; }
+        #logo { position: absolute; top: 50%; left: 16px; transform: translateY(-50%); display: flex; align-items: center; gap: 4px; z-index: 4; }
+        .logo-icon { height: 14px; fill: #E8112D; }
+        .logo-text { font-weight: 800; font-size: 15px; color: #fff; letter-spacing: -0.01em; }
+        #product-wrap { position: absolute; top: 7px; left: 112px; width: 110px; height: 76px; z-index: 3; will-change: transform; }
+        #product-card { width: 100%; height: 100%; background: #fff; border-radius: 8px; box-shadow: 0 4px 16px rgba(232,17,45,0.15), 0 3px 10px rgba(0,0,0,0.5); padding: 6px; }
+        #product-img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: block; }
+        #price-badge { position: absolute; top: 18px; left: 234px; background: #E8112D; border-radius: 6px; padding: 5px 11px; z-index: 5; box-shadow: 0 3px 10px rgba(0,0,0,0.4); will-change: transform; }
+        #price-label { display: block; font-weight: 600; font-size: 7px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.85); white-space: nowrap; }
+        #price-value { display: block; font-weight: 800; font-size: 15px; color: #fff; white-space: nowrap; }
+        #title { position: absolute; top: 14px; left: 334px; width: 210px; max-height: 34px; overflow: hidden; font-weight: 800; font-size: 14px; line-height: 1.1; color: #fff; z-index: 4; }
+        #subtitle { position: absolute; top: 54px; left: 334px; width: 200px; max-height: 24px; overflow: hidden; font-weight: 500; font-size: 9px; line-height: 1.25; color: rgba(255,255,255,0.5); z-index: 4; }
+        #cta-btn { position: absolute; right: 18px; top: 50%; margin-top: -15px; z-index: 12; background: #E8112D; border: none; border-radius: 2px; color: #fff; font-family: 'Montserrat', Arial, sans-serif; font-weight: 800; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 18px; cursor: pointer; overflow: hidden; will-change: transform; white-space: nowrap; }
+        #cta-shine { position: absolute; top: 0; left: 0; width: 40%; height: 100%; background: linear-gradient(105deg, transparent, rgba(255,255,255,0.45), transparent); pointer-events: none; }
+        #bg-exit { position: absolute; inset: 0; z-index: 10; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="banner">
+        <div id="accent-strip"></div>
+        <div id="logo"><svg class="logo-icon" viewBox="0 0 110 100"><polygon points="36,4 4,50 36,96 50,96 18,50 50,4"/><polygon points="74,4 106,50 74,96 60,96 92,50 60,4"/></svg><span class="logo-text">LOXAM</span></div>
+        <div id="product-wrap"><div id="product-card"><img id="product-img" src="" alt=""></div></div>
+        <div id="price-badge"><span id="price-label">Alquiler 1 día</span><span id="price-value"></span></div>
+        <div id="title"></div>
+        <div id="subtitle"></div>
+        <div id="bg-exit"></div>
+        <button id="cta-btn"><span id="cta-label"></span><span id="cta-shine"></span></button>
+    </div>
+    <script>
+        Enabler.setProfileId(10962655);
+        window.onload = function () {
+            if (Enabler.isInitialized()) { enablerInitHandler(); }
+            else { Enabler.addEventListener(studio.events.StudioEvent.INIT, enablerInitHandler); }
+        };
+        function enablerInitHandler() {
+            if (Enabler.isVisible()) { devDynamicContentInit(); }
+            else { Enabler.addEventListener(studio.events.StudioEvent.VISIBLE, devDynamicContentInit); }
+        }
+        function devDynamicContentInit() {
+            if (typeof dynamicContent !== 'undefined' && dynamicContent.Loxamhune_feeds_feed_studio) {
+                setupBannerContent(dynamicContent.Loxamhune_feeds_feed_studio[0]);
+            } else {
+                setupBannerContent({
+                    titulo: 'Fresadora de gasolina para tu obra',
+                    subtitulo: 'Alquila maquinaria profesional desde 10€/día.',
+                    CTA: 'Alquila ahora',
+                    URL_Producto: { Url: 'https://alquiler.loxamhune.com/fresadora-gasolina/' },
+                    URL_Imagen: { Url: 'https://webproductimages.loxamhune.com/images/ecommerce/MAQUINARIA%20PEQUE%C3%91A%20LOXAM/_JPG_retocados/Tratamiento%20del%20hormigo%E2%95%A0%C3%BCn/0026-0040-fresadora-gasolina-1.jpg' },
+                    Precio_1_dia: '58.15 €', Precio_mas1_dia: '20.46 €', Precio_7mas_dias: '52.77 €'
+                });
+            }
+        }
+        function setupBannerContent(data) {
+            document.getElementById('title').textContent = data.titulo;
+            document.getElementById('subtitle').textContent = data.subtitulo;
+            document.getElementById('cta-label').textContent = data.CTA;
+            document.getElementById('price-value').textContent = data.Precio_1_dia;
+            var img = document.getElementById('product-img');
+            function done() { document.getElementById('banner').style.visibility = 'visible'; setupExits(data); initAnimations(); }
+            img.onload = done; img.onerror = done;
+            img.src = data.URL_Imagen.Url;
+        }
+        function setupExits(data) {
+            var url = data.URL_Producto.Url;
+            document.getElementById('bg-exit').addEventListener('click', function () { Enabler.exitOverride('Background_Click', url); });
+            document.getElementById('cta-btn').addEventListener('click', function (e) { e.stopPropagation(); Enabler.exitOverride('CTA_Click', url); });
+        }
+        function initAnimations() {
+            gsap.set('#accent-strip', { scaleX: 0, transformOrigin: 'left center' });
+            gsap.set('#logo', { opacity: 0, x: -14 });
+            gsap.set('#product-wrap', { opacity: 0, rotation: 14, scale: 0.72, transformOrigin: 'center center' });
+            gsap.set('#price-badge', { opacity: 0, scale: 0, rotation: -12 });
+            gsap.set(['#title', '#subtitle'], { opacity: 0, x: 18 });
+            gsap.set('#cta-btn', { opacity: 0, x: 20 });
+            gsap.set('#cta-shine', { xPercent: -160 });
+            gsap.timeline({ defaults: { ease: 'power3.out' } })
+                .to('#accent-strip', { scaleX: 1, duration: 0.45, ease: 'power2.out' })
+                .to('#logo',         { opacity: 1, x: 0, duration: 0.35 }, '-=0.2')
+                .to('#product-wrap', { opacity: 1, rotation: 0, scale: 1, duration: 0.6, ease: 'back.out(1.5)' }, '-=0.2')
+                .to('#price-badge',  { opacity: 1, scale: 1, rotation: 0, duration: 0.45, ease: 'back.out(2.5)' }, '-=0.12')
+                .to('#title',        { opacity: 1, x: 0, duration: 0.45 }, '-=0.2')
+                .to('#subtitle',     { opacity: 1, x: 0, duration: 0.4 }, '-=0.28')
+                .to('#cta-btn',      { opacity: 1, x: 0, duration: 0.38, ease: 'back.out(1.8)' }, '-=0.2')
+                .to('#cta-shine',    { xPercent: 350, duration: 0.6, ease: 'power2.inOut' }, '+=0.15')
+                .to('#product-wrap', { rotation: 3, duration: 1.0, ease: 'sine.inOut', repeat: 3, yoyo: true }, '+=0.1')
+                .to('#cta-btn',      { scale: 1.06, duration: 0.3, repeat: 3, yoyo: true, ease: 'power1.inOut' }, '-=2.6');
+        }
+    </script>
+</body>
+</html>
