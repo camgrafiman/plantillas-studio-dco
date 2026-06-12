@@ -33,6 +33,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            z-index: 11;
         }
 
         .panel {
@@ -137,7 +138,7 @@
             position: absolute;
             right: 14px;
             bottom: 14px;
-            z-index: 11;
+            z-index: 12;
             background: transparent;
             border: 1.5px solid rgba(255,255,255,0.85);
             color: #fff;
@@ -292,8 +293,14 @@
 
         function setupExits(data) {
             var url = data.Landing_URL.Url;
+            // bg-exit cubre color-bar; los paneles del acordeón (z-index superior) tienen su propio handler
             document.getElementById('bg-exit').addEventListener('click', function () {
                 Enabler.exitOverride('Background_Click', url);
+            });
+            panels.forEach(function(panel) {
+                panel.addEventListener('click', function() {
+                    Enabler.exitOverride('Background_Click', url);
+                });
             });
             document.getElementById('cta-btn').addEventListener('click', function (e) {
                 e.stopPropagation();

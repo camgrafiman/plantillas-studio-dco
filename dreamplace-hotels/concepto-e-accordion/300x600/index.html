@@ -33,6 +33,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            z-index: 11;
         }
 
         .panel {
@@ -137,7 +138,7 @@
             position: absolute;
             left: 16px;
             bottom: 16px;
-            z-index: 11;
+            z-index: 12;
             background: transparent;
             border: 1.5px solid rgba(255,255,255,0.85);
             color: #fff;
@@ -294,6 +295,11 @@
             var url = data.Landing_URL.Url;
             document.getElementById('bg-exit').addEventListener('click', function () {
                 Enabler.exitOverride('Background_Click', url);
+            });
+            panels.forEach(function(panel) {
+                panel.addEventListener('click', function() {
+                    Enabler.exitOverride('Background_Click', url);
+                });
             });
             document.getElementById('cta-btn').addEventListener('click', function (e) {
                 e.stopPropagation();
