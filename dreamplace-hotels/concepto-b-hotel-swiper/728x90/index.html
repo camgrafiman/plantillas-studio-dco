@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamPlace — 728×90 — Hotel Swiper</title>
+
+    <script src="https://s0.2mdn.net/ads/studio/Enabler.js"></script>
+    <script src="https://s0.2mdn.net/ads/studio/cached_libs/gsap_3.14.2_min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #000; }
+
+        #banner {
+            position: relative;
+            width: 728px;
+            height: 90px;
+            background: #0B1828;
+            border: 1px solid #1c2d3f;
+            overflow: hidden;
+            visibility: hidden;
+            user-select: none;
+            font-family: 'Montserrat', Arial, sans-serif;
+        }
+
+        #banner::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse at 45% 50%, rgba(200,151,63,0.08) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 50%, rgba(20,70,150,0.06) 0%, transparent 40%);
+            z-index: 0; pointer-events: none;
+        }
+
+        #gold-top {
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, #C8973F 0%, #F0C878 15%, rgba(200,151,63,0.4) 50%, #F0C878 85%, #C8973F 100%);
+            z-index: 6; transform-origin: left center;
+        }
+
+        #gold-bottom {
+            position: absolute;
+            bottom: 0; left: 0; right: 0; height: 1.5px;
+            background: linear-gradient(90deg, rgba(200,151,63,0.6) 0%, rgba(200,151,63,0.15) 60%, transparent 100%);
+            z-index: 5;
+        }
+
+        #logo-zone {
+            position: absolute;
+            top: 50%; left: 14px;
+            transform: translateY(-50%);
+            display: flex; align-items: center; gap: 5px;
+            z-index: 5;
+        }
+        .logo-pin { width: 14px; height: 14px; fill: #C8973F; }
+        .logo-wordmark { font-weight: 800; font-size: 13px; color: #fff; letter-spacing: -0.01em; white-space: nowrap; }
+        .logo-wordmark em { font-style: normal; color: #C8973F; }
+
+        #stars {
+            position: absolute;
+            top: 58px; left: 14px;
+            display: flex; gap: 2px;
+            z-index: 5;
+        }
+        .star { font-size: 7px; color: #C8973F; }
+
+        .vdivider {
+            position: absolute;
+            top: 12px; bottom: 12px; width: 1px;
+            background: linear-gradient(180deg, transparent, rgba(200,151,63,0.4), transparent);
+            z-index: 4;
+        }
+        #vdiv1 { left: 110px; }
+        #vdiv2 { left: 500px; }
+
+        #photo-wrap {
+            position: absolute;
+            top: 9px; left: 120px;
+            width: 72px; height: 72px;
+            border-radius: 8px;
+            overflow: visible;
+            z-index: 3;
+            will-change: transform;
+        }
+
+        #photo-inner {
+            width: 100%; height: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1.5px rgba(200,151,63,0.5),
+                0 6px 18px rgba(0,0,0,0.6);
+        }
+
+        .hotel-swiper { width: 100%; height: 100%; }
+
+        .hotel-swiper .swiper-slide img {
+            width: 100%; height: 100%;
+            object-fit: cover; display: block;
+        }
+
+        #slide-counter {
+            position: absolute;
+            bottom: -12px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; gap: 3px; align-items: center;
+            z-index: 4;
+        }
+        .dot { width: 3.5px; height: 3.5px; border-radius: 50%; background: rgba(255,255,255,0.35); }
+        .dot.active { background: #C8973F; width: 9px; border-radius: 2px; }
+
+        #name-zone {
+            position: absolute;
+            top: 50%; left: 206px;
+            transform: translateY(-50%);
+            z-index: 4;
+        }
+
+        #hotel-name {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 700; font-size: 18px; line-height: 1.08;
+            color: #fff; white-space: nowrap;
+        }
+
+        #location { display: flex; align-items: center; gap: 3px; margin-top: 3px; }
+        .info-pin { width: 8px; height: 8px; fill: #C8973F; flex-shrink: 0; }
+        #destino-text {
+            font-size: 8.5px; font-weight: 700; color: #C8973F;
+            text-transform: uppercase; letter-spacing: 0.06em;
+            white-space: nowrap;
+        }
+
+        #tagline {
+            font-size: 8px; font-weight: 500; color: rgba(255,255,255,0.38);
+            margin-top: 5px; white-space: nowrap; overflow: hidden;
+            max-width: 270px; text-overflow: ellipsis;
+        }
+
+        #price-zone {
+            position: absolute;
+            top: 50%; left: 510px;
+            transform: translateY(-50%);
+            z-index: 4;
+        }
+
+        #price-label {
+            font-size: 7px; font-weight: 600; color: rgba(255,255,255,0.35);
+            text-transform: uppercase; letter-spacing: 0.1em; display: block;
+        }
+        #price-row { display: flex; align-items: baseline; gap: 3px; }
+        #price-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px; font-weight: 700; color: #fff; line-height: 1;
+        }
+        #price-unit { font-size: 9px; color: rgba(255,255,255,0.38); font-weight: 500; }
+
+        #discount {
+            display: inline-flex; align-items: center; margin-top: 4px;
+            background: linear-gradient(135deg, #B87B28, #EBBA5A);
+            color: #06101e; font-size: 8px; font-weight: 800;
+            padding: 2px 8px; border-radius: 12px; letter-spacing: 0.04em;
+        }
+
+        #cta-btn {
+            position: absolute;
+            right: 14px; top: 50%;
+            transform: translateY(-50%);
+            height: 42px;
+            z-index: 12;
+            background: linear-gradient(100deg, #B07020, #C8973F 40%, #EBBA5A 65%, #C8973F 85%, #B07020);
+            background-size: 250% 100%;
+            border: none; border-radius: 6px;
+            color: #06101e;
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 800; font-size: 10px;
+            letter-spacing: 0.09em; text-transform: uppercase;
+            padding: 0 22px;
+            cursor: pointer; overflow: hidden; will-change: transform;
+            display: flex; align-items: center; gap: 6px;
+            white-space: nowrap;
+        }
+
+        #cta-shine {
+            position: absolute; top: 0; left: 0;
+            width: 35%; height: 100%;
+            background: linear-gradient(105deg, transparent, rgba(255,255,255,0.32), transparent);
+            pointer-events: none;
+        }
+
+        #bg-exit { position: absolute; inset: 0; z-index: 10; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="banner">
+        <div id="gold-top"></div>
+        <div id="gold-bottom"></div>
+
+        <div id="logo-zone">
+            <svg class="logo-pin" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <span class="logo-wordmark">dream<em>place</em></span>
+        </div>
+        <div id="stars"></div>
+
+        <div class="vdivider" id="vdiv1"></div>
+
+        <div id="photo-wrap">
+            <div id="photo-inner">
+                <div class="swiper hotel-swiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><img id="foto-1" src="" alt=""></div>
+                        <div class="swiper-slide"><img id="foto-2" src="" alt=""></div>
+                        <div class="swiper-slide"><img id="foto-3" src="" alt=""></div>
+                    </div>
+                </div>
+            </div>
+            <div id="slide-counter">
+                <div class="dot active" id="d1"></div>
+                <div class="dot" id="d2"></div>
+                <div class="dot" id="d3"></div>
+            </div>
+        </div>
+
+        <div id="name-zone">
+            <div id="hotel-name">Hotel Riviera Palace</div>
+            <div id="location">
+                <svg class="info-pin" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                <span id="destino-text">Marbella, España</span>
+            </div>
+            <div id="tagline">Lujo frente al mar con vistas espectaculares.</div>
+        </div>
+
+        <div class="vdivider" id="vdiv2"></div>
+
+        <div id="price-zone">
+            <span id="price-label">Desde</span>
+            <div id="price-row">
+                <span id="price-value">189€</span>
+                <span id="price-unit">/noche</span>
+            </div>
+            <span id="discount">−25% OFF</span>
+        </div>
+
+        <div id="bg-exit"></div>
+        <button id="cta-btn">
+            <span id="cta-label">Reserva ahora</span>
+            <span>→</span>
+            <span id="cta-shine"></span>
+        </button>
+    </div>
+
+    <script>
+        Enabler.setProfileId(0);
+
+        window.onload = function () {
+            if (Enabler.isInitialized()) { enablerInitHandler(); }
+            else { Enabler.addEventListener(studio.events.StudioEvent.INIT, enablerInitHandler); }
+        };
+
+        function enablerInitHandler() {
+            if (Enabler.isVisible()) { devDynamicContentInit(); }
+            else { Enabler.addEventListener(studio.events.StudioEvent.VISIBLE, devDynamicContentInit); }
+        }
+
+        function devDynamicContentInit() {
+            if (typeof dynamicContent !== 'undefined' && dynamicContent.DreamPlace_Swiper) {
+                setupBannerContent(dynamicContent.DreamPlace_Swiper[0]);
+            } else {
+                setupBannerContent({
+                    Hotel_Name:      'Hotel Riviera Palace',
+                    Hotel_Destino:   'Marbella, España',
+                    Hotel_Tagline:   'Lujo frente al mar con vistas espectaculares.',
+                    Hotel_Estrellas: '5',
+                    Hotel_Precio:    '189€',
+                    Hotel_Descuento: '−25%',
+                    CTA_Text:        'Reserva ahora',
+                    Landing_URL:     { Url: 'https://www.dreamplacehotels.com' },
+                    Foto_1:          { Url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=300&q=80' },
+                    Foto_2:          { Url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=300&q=80' },
+                    Foto_3:          { Url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=300&q=80' }
+                });
+            }
+        }
+
+        function setupBannerContent(data) {
+            document.getElementById('hotel-name').textContent   = data.Hotel_Name;
+            document.getElementById('destino-text').textContent = data.Hotel_Destino;
+            document.getElementById('tagline').textContent      = data.Hotel_Tagline;
+            document.getElementById('price-value').textContent  = data.Hotel_Precio;
+            document.getElementById('discount').textContent     = data.Hotel_Descuento + ' OFF';
+            document.getElementById('cta-label').textContent    = data.CTA_Text;
+
+            var starsEl = document.getElementById('stars');
+            var count = parseInt(data.Hotel_Estrellas) || 5;
+            starsEl.innerHTML = '';
+            for (var i = 0; i < count; i++) {
+                var s = document.createElement('span');
+                s.className = 'star'; s.textContent = '★';
+                starsEl.appendChild(s);
+            }
+
+            var items = [
+                { el: document.getElementById('foto-1'), url: data.Foto_1.Url },
+                { el: document.getElementById('foto-2'), url: data.Foto_2.Url },
+                { el: document.getElementById('foto-3'), url: data.Foto_3.Url }
+            ];
+            var loaded = 0;
+            items.forEach(function (item) {
+                item.el.onload = item.el.onerror = function () {
+                    if (++loaded >= items.length) { initBanner(data); }
+                };
+                item.el.src = item.url;
+            });
+        }
+
+        function initBanner(data) {
+            document.getElementById('banner').style.visibility = 'visible';
+            setupExits(data);
+
+            new Swiper('.hotel-swiper', {
+                effect: 'fade',
+                fadeEffect: { crossFade: true },
+                autoplay: { delay: 2500, disableOnInteraction: false },
+                loop: true,
+                speed: 800,
+                on: {
+                    slideChange: function () {
+                        var idx = this.realIndex;
+                        ['d1','d2','d3'].forEach(function(id, i) {
+                            document.getElementById(id).className = 'dot' + (i === idx ? ' active' : '');
+                        });
+                    }
+                }
+            });
+
+            initAnimations();
+        }
+
+        function setupExits(data) {
+            var url = data.Landing_URL.Url;
+            document.getElementById('bg-exit').addEventListener('click', function () {
+                Enabler.exitOverride('Background_Click', url);
+            });
+            document.getElementById('cta-btn').addEventListener('click', function (e) {
+                e.stopPropagation();
+                Enabler.exitOverride('CTA_Click', url);
+            });
+        }
+
+        function initAnimations() {
+            gsap.set('#gold-top',    { scaleX: 0, transformOrigin: 'left center' });
+            gsap.set('#logo-zone',   { opacity: 0, x: -14 });
+            gsap.set('#stars',       { opacity: 0, x: -10 });
+            gsap.set('#photo-wrap',  { opacity: 0, scale: 0.8, rotation: -6, transformOrigin: 'center center' });
+            gsap.set('#name-zone',   { opacity: 0, x: 16 });
+            gsap.set('#price-zone',  { opacity: 0, x: 16 });
+            gsap.set('#cta-btn',     { opacity: 0, x: 20 });
+            gsap.set('#cta-shine',   { xPercent: -160 });
+
+            gsap.timeline({ defaults: { ease: 'power3.out' } })
+                .to('#gold-top',   { scaleX: 1, duration: 0.55, ease: 'power2.out' })
+                .to('#logo-zone',  { opacity: 1, x: 0, duration: 0.4 }, '-=0.3')
+                .to('#stars',      { opacity: 1, x: 0, duration: 0.35 }, '-=0.25')
+                .to('#photo-wrap', { opacity: 1, scale: 1, rotation: 0, duration: 0.65, ease: 'back.out(1.6)' }, '-=0.28')
+                .to('#name-zone',  { opacity: 1, x: 0, duration: 0.48 }, '-=0.45')
+                .to('#price-zone', { opacity: 1, x: 0, duration: 0.42 }, '-=0.38')
+                .to('#cta-btn',    { opacity: 1, x: 0, duration: 0.4, ease: 'back.out(1.8)' }, '-=0.32')
+                .to('#cta-shine',  { xPercent: 350, duration: 0.75, ease: 'power2.inOut' }, '+=0.2')
+                .to('#photo-wrap', { y: -3, duration: 1.8, ease: 'sine.inOut', repeat: -1, yoyo: true }, '+=0.35')
+                .to('#cta-btn',    { scale: 1.04, duration: 0.32, repeat: 3, yoyo: true, ease: 'power1.inOut' }, '-=4.0');
+        }
+    </script>
+</body>
+</html>
