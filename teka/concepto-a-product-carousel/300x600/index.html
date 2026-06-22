@@ -212,28 +212,6 @@
         }
 
         /* ═══════════════════════════════
-           PROGRESS DOTS
-        ═══════════════════════════════ */
-        #dots {
-            position: absolute;
-            bottom: 13px; left: 50%;
-            transform: translateX(-50%);
-            display: flex; gap: 5px;
-            z-index: 25;
-        }
-
-        .dot {
-            width: 5px; height: 5px; border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            transition: all 0.35s ease;
-        }
-
-        .dot.active {
-            background: #E30613;
-            width: 17px; border-radius: 3px;
-        }
-
-        /* ═══════════════════════════════
            CLICK EXIT OVERLAY
         ═══════════════════════════════ */
         #bg-exit { position: absolute; inset: 0; z-index: 10; cursor: pointer; }
@@ -306,13 +284,6 @@
         </div>
     </div>
 
-    <!-- PROGRESS DOTS -->
-    <div id="dots">
-        <div class="dot active" id="dot-1"></div>
-        <div class="dot" id="dot-2"></div>
-        <div class="dot" id="dot-3"></div>
-    </div>
-
     <div id="bg-exit"></div>
 </div>
 
@@ -361,7 +332,6 @@
     var exitUrls       = [];
     var currentFrameIdx = 0;
     var FRAME_IDS      = ['frame-1', 'frame-2', 'frame-3'];
-    var DOT_IDS        = ['dot-1', 'dot-2', 'dot-3'];
 
     function setupBannerContent(data) {
         var prods = [
@@ -405,7 +375,6 @@
         gsap.set('#frame-1 .copy-text',        { opacity: 0, y: 16 });
         gsap.set('#frame-1 .cta-btn',          { opacity: 0, y: 12 });
         gsap.set('#frame-1 .cta-shine',        { xPercent: -200 });
-        gsap.set('#dots',                      { opacity: 0 });
 
         // ── Opening sequence ──
         var tl = gsap.timeline({
@@ -419,19 +388,18 @@
             .to('#frame-counter', { opacity: 1, duration: 0.3 }, '-=0.2')
 
             // Photo wipe down
-            .to('#frame-1 .photo-wrap', { clipPath: 'inset(0 0 0% 0)', duration: 0.85, ease: 'expo.inOut' }, '-=0.08')
+            .to('#frame-1 .photo-wrap', { clipPath: 'inset(0 0 0% 0)', duration: 0.80, ease: 'expo.inOut' }, '-=0.08')
             // Ken Burns (concurrent with photo reveal)
             .to('#frame-1 .photo-wrap img', { scale: 1.08, duration: 6.5, ease: 'none' }, '<')
 
-            // Info block elements stagger in
-            .to('#frame-1 .category-badge', { opacity: 1, x: 0,  duration: 0.34, ease: 'power2.out' }, '-=0.38')
-            .to('#frame-1 .product-name',   { opacity: 1, y: 0,  duration: 0.42, ease: 'power2.out' }, '-=0.26')
-            .to('#frame-1 .copy-text',      { opacity: 1, y: 0,  duration: 0.36, ease: 'power2.out' }, '-=0.26')
-            .to('#frame-1 .cta-btn',        { opacity: 1, y: 0,  duration: 0.34, ease: 'back.out(1.8)' }, '-=0.2')
-            .to('#dots',                    { opacity: 1, duration: 0.26 }, '-=0.18')
+            // Info block: aparecen casi al mismo tiempo que la foto empieza a abrirse
+            .to('#frame-1 .category-badge', { opacity: 1, x: 0,  duration: 0.22, ease: 'power2.out' }, '-=0.65')
+            .to('#frame-1 .product-name',   { opacity: 1, y: 0,  duration: 0.28, ease: 'power2.out' }, '-=0.18')
+            .to('#frame-1 .copy-text',      { opacity: 1, y: 0,  duration: 0.24, ease: 'power2.out' }, '-=0.18')
+            .to('#frame-1 .cta-btn',        { opacity: 1, y: 0,  duration: 0.24, ease: 'back.out(1.8)' }, '-=0.14')
 
             // CTA shine sweep
-            .to('#frame-1 .cta-shine', { xPercent: 500, duration: 0.78, ease: 'power2.inOut' }, '+=0.12');
+            .to('#frame-1 .cta-shine', { xPercent: 500, duration: 0.70, ease: 'power2.inOut' }, '+=0.08');
     }
 
     function nextFrame() {
@@ -442,10 +410,6 @@
         var fromId = '#' + FRAME_IDS[currentFrameIdx];
         var toId   = '#' + FRAME_IDS[toIdx];
 
-        // Update UI indicators
-        DOT_IDS.forEach(function (id, i) {
-            document.getElementById(id).className = 'dot' + (i === toIdx ? ' active' : '');
-        });
         document.getElementById('frame-counter').textContent = (toIdx + 1) + ' / 3';
 
         var tl = gsap.timeline({
@@ -484,18 +448,18 @@
             .set(toId + ' .cta-shine',      { xPercent: -200 })
 
             // Photo wipes down
-            .to(toId + ' .photo-wrap', { clipPath: 'inset(0 0 0% 0)', duration: 0.72, ease: 'expo.inOut' })
+            .to(toId + ' .photo-wrap', { clipPath: 'inset(0 0 0% 0)', duration: 0.65, ease: 'expo.inOut' })
             // Ken Burns (concurrent)
             .to(toId + ' .photo-wrap img', { scale: 1.08, duration: 6.5, ease: 'none' }, '<')
 
-            // Info elements stagger in
-            .to(toId + ' .category-badge', { opacity: 1, x: 0, duration: 0.33, ease: 'power2.out' }, '-=0.35')
-            .to(toId + ' .product-name',   { opacity: 1, y: 0, duration: 0.4,  ease: 'power2.out' }, '-=0.26')
-            .to(toId + ' .copy-text',      { opacity: 1, y: 0, duration: 0.34, ease: 'power2.out' }, '-=0.26')
-            .to(toId + ' .cta-btn',        { opacity: 1, y: 0, duration: 0.34, ease: 'back.out(1.8)' }, '-=0.2')
+            // Info elements: arrancan casi con la foto
+            .to(toId + ' .category-badge', { opacity: 1, x: 0, duration: 0.20, ease: 'power2.out' }, '-=0.55')
+            .to(toId + ' .product-name',   { opacity: 1, y: 0, duration: 0.26, ease: 'power2.out' }, '-=0.16')
+            .to(toId + ' .copy-text',      { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' }, '-=0.16')
+            .to(toId + ' .cta-btn',        { opacity: 1, y: 0, duration: 0.22, ease: 'back.out(1.8)' }, '-=0.12')
 
             // CTA shine sweep
-            .to(toId + ' .cta-shine', { xPercent: 500, duration: 0.72, ease: 'power2.inOut' }, '+=0.1');
+            .to(toId + ' .cta-shine', { xPercent: 500, duration: 0.62, ease: 'power2.inOut' }, '+=0.08');
     }
 
     function setupExits() {
