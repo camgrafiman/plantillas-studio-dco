@@ -26,6 +26,9 @@
             font-family: 'Inter', Helvetica, Arial, sans-serif;
         }
 
+        /* ═══════════════════════════════
+           HEADER
+        ═══════════════════════════════ */
         #header {
             position: absolute;
             top: 0; left: 0; right: 0; height: 56px;
@@ -34,6 +37,7 @@
             z-index: 20;
         }
 
+        /* Thin side rules flanking logo */
         #header::before,
         #header::after {
             content: '';
@@ -61,6 +65,7 @@
             transform-origin: left center;
         }
 
+        /* Frame counter */
         #frame-counter {
             position: absolute;
             top: 20px; right: 14px;
@@ -70,6 +75,9 @@
             z-index: 22;
         }
 
+        /* ═══════════════════════════════
+           FRAMES
+        ═══════════════════════════════ */
         .frame {
             position: absolute;
             top: 58px; left: 0; right: 0;
@@ -78,6 +86,7 @@
             flex-direction: column;
         }
 
+        /* ── Photo area ── */
         .photo-wrap {
             width: 300px;
             height: 308px;
@@ -93,6 +102,7 @@
             transform-origin: center center;
         }
 
+        /* Gradient blending photo into black info block */
         .photo-wrap::after {
             content: '';
             position: absolute;
@@ -106,6 +116,7 @@
             z-index: 1;
         }
 
+        /* Horizontal red rule inside photo (bottom) */
         .photo-rule {
             position: absolute;
             bottom: 0; left: 0; right: 0; height: 1px;
@@ -114,6 +125,7 @@
             pointer-events: none;
         }
 
+        /* ── Info block ── */
         .info-block {
             flex: 1;
             background: #000;
@@ -180,6 +192,9 @@
             pointer-events: none;
         }
 
+        /* ═══════════════════════════════
+           SCAN LINE (transition FX)
+        ═══════════════════════════════ */
         #scan-line {
             position: absolute;
             top: 58px; left: 0;
@@ -196,39 +211,26 @@
             pointer-events: none;
         }
 
-        #dots {
-            position: absolute;
-            bottom: 13px; left: 50%;
-            transform: translateX(-50%);
-            display: flex; gap: 5px;
-            z-index: 25;
-        }
-
-        .dot {
-            width: 5px; height: 5px; border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            transition: all 0.35s ease;
-        }
-
-        .dot.active {
-            background: #E30613;
-            width: 17px; border-radius: 3px;
-        }
-
+        /* ═══════════════════════════════
+           CLICK EXIT OVERLAY
+        ═══════════════════════════════ */
         #bg-exit { position: absolute; inset: 0; z-index: 10; cursor: pointer; }
     </style>
 </head>
 <body>
 <div id="banner">
 
+    <!-- HEADER -->
     <div id="header">
         <div id="logo">TEKA</div>
     </div>
     <div id="header-rule"></div>
     <div id="frame-counter">1 / 3</div>
 
+    <!-- SCAN LINE -->
     <div id="scan-line"></div>
 
+    <!-- ═══ FRAME 1 ═══ -->
     <div class="frame" id="frame-1">
         <div class="photo-wrap">
             <img id="foto-1" src="" alt="">
@@ -246,6 +248,7 @@
         </div>
     </div>
 
+    <!-- ═══ FRAME 2 ═══ -->
     <div class="frame" id="frame-2">
         <div class="photo-wrap">
             <img id="foto-2" src="" alt="">
@@ -263,6 +266,7 @@
         </div>
     </div>
 
+    <!-- ═══ FRAME 3 ═══ -->
     <div class="frame" id="frame-3">
         <div class="photo-wrap">
             <img id="foto-3" src="" alt="">
@@ -280,16 +284,11 @@
         </div>
     </div>
 
-    <div id="dots">
-        <div class="dot active" id="dot-1"></div>
-        <div class="dot" id="dot-2"></div>
-        <div class="dot" id="dot-3"></div>
-    </div>
-
     <div id="bg-exit"></div>
 </div>
 
 <script>
+    // ⚠️ Actualizar profileId y nombre del perfil cuando el cliente facilite el feed de Studio
     Enabler.setProfileId(0);
 
     window.onload = function () {
@@ -303,6 +302,7 @@
     }
 
     function devDynamicContentInit() {
+        // ⚠️ Reemplazar 'Teka_Dynamic' por el nombre exacto del perfil en Studio
         if (typeof dynamicContent !== 'undefined' && dynamicContent.Teka_Dynamic) {
             setupBannerContent(dynamicContent.Teka_Dynamic[0]);
         } else {
@@ -332,7 +332,6 @@
     var exitUrls       = [];
     var currentFrameIdx = 0;
     var FRAME_IDS      = ['frame-1', 'frame-2', 'frame-3'];
-    var DOT_IDS        = ['dot-1', 'dot-2', 'dot-3'];
 
     function setupBannerContent(data) {
         var prods = [
@@ -364,6 +363,7 @@
         document.getElementById('banner').style.visibility = 'visible';
         setupExits();
 
+        // ── Initial states ──
         gsap.set('#frame-2, #frame-3', { autoAlpha: 0 });
         gsap.set('#header',                    { y: -60, opacity: 0 });
         gsap.set('#header-rule',               { scaleX: 0, transformOrigin: 'left center' });
@@ -375,24 +375,31 @@
         gsap.set('#frame-1 .copy-text',        { opacity: 0, y: 16 });
         gsap.set('#frame-1 .cta-btn',          { opacity: 0, y: 12 });
         gsap.set('#frame-1 .cta-shine',        { xPercent: -200 });
-        gsap.set('#dots',                      { opacity: 0 });
 
+        // ── Opening sequence ──
         var tl = gsap.timeline({
             onComplete: function () { setTimeout(nextFrame, 4200); }
         });
 
         tl
+            // Header drops in
             .to('#header',      { y: 0, opacity: 1, duration: 0.55, ease: 'power2.out' })
             .to('#header-rule', { scaleX: 1, duration: 0.42, ease: 'power2.inOut' }, '-=0.28')
             .to('#frame-counter', { opacity: 1, duration: 0.3 }, '-=0.2')
-            .to('#frame-1 .photo-wrap', { clipPath: 'inset(0 0 0% 0)', duration: 0.85, ease: 'expo.inOut' }, '-=0.08')
+
+            // Photo wipe down
+            .to('#frame-1 .photo-wrap', { clipPath: 'inset(0 0 0% 0)', duration: 0.80, ease: 'expo.inOut' }, '-=0.08')
+            // Ken Burns (concurrent with photo reveal)
             .to('#frame-1 .photo-wrap img', { scale: 1.08, duration: 6.5, ease: 'none' }, '<')
-            .to('#frame-1 .category-badge', { opacity: 1, x: 0,  duration: 0.34, ease: 'power2.out' }, '-=0.38')
-            .to('#frame-1 .product-name',   { opacity: 1, y: 0,  duration: 0.42, ease: 'power2.out' }, '-=0.26')
-            .to('#frame-1 .copy-text',      { opacity: 1, y: 0,  duration: 0.36, ease: 'power2.out' }, '-=0.26')
-            .to('#frame-1 .cta-btn',        { opacity: 1, y: 0,  duration: 0.34, ease: 'back.out(1.8)' }, '-=0.2')
-            .to('#dots',                    { opacity: 1, duration: 0.26 }, '-=0.18')
-            .to('#frame-1 .cta-shine', { xPercent: 500, duration: 0.78, ease: 'power2.inOut' }, '+=0.12');
+
+            // Info block: aparecen casi al mismo tiempo que la foto empieza a abrirse
+            .to('#frame-1 .category-badge', { opacity: 1, x: 0,  duration: 0.22, ease: 'power2.out' }, '-=0.65')
+            .to('#frame-1 .product-name',   { opacity: 1, y: 0,  duration: 0.28, ease: 'power2.out' }, '-=0.18')
+            .to('#frame-1 .copy-text',      { opacity: 1, y: 0,  duration: 0.24, ease: 'power2.out' }, '-=0.18')
+            .to('#frame-1 .cta-btn',        { opacity: 1, y: 0,  duration: 0.24, ease: 'back.out(1.8)' }, '-=0.14')
+
+            // CTA shine sweep
+            .to('#frame-1 .cta-shine', { xPercent: 500, duration: 0.70, ease: 'power2.inOut' }, '+=0.08');
     }
 
     function nextFrame() {
@@ -403,9 +410,6 @@
         var fromId = '#' + FRAME_IDS[currentFrameIdx];
         var toId   = '#' + FRAME_IDS[toIdx];
 
-        DOT_IDS.forEach(function (id, i) {
-            document.getElementById(id).className = 'dot' + (i === toIdx ? ' active' : '');
-        });
         document.getElementById('frame-counter').textContent = (toIdx + 1) + ' / 3';
 
         var tl = gsap.timeline({
@@ -415,16 +419,25 @@
             }
         });
 
+        // ── EXIT ──────────────────────────────────────
         tl
+            // Text exits upward quickly
             .to(fromId + ' .cta-btn',       { opacity: 0, y: -10, duration: 0.22, ease: 'power2.in' })
             .to(fromId + ' .copy-text',      { opacity: 0, y: -7,  duration: 0.2  }, '-=0.14')
             .to(fromId + ' .product-name',   { opacity: 0, y: -7,  duration: 0.2  }, '-=0.16')
             .to(fromId + ' .category-badge', { opacity: 0, x: -10, duration: 0.18 }, '-=0.16')
+            // Photo wipes up
             .to(fromId + ' .photo-wrap', { clipPath: 'inset(100% 0 0% 0)', duration: 0.55, ease: 'power2.inOut' }, '-=0.06')
+
+            // Scan line sweeps L→R during photo exit
             .set('#scan-line', { opacity: 1, x: 0 }, '<+=0.12')
             .to('#scan-line',  { x: 310, duration: 0.52, ease: 'power2.inOut' }, '<')
+
             .set(fromId, { autoAlpha: 0 })
             .set('#scan-line', { opacity: 0, x: 0 })
+
+        // ── ENTER ─────────────────────────────────────
+            // Set all entering elements to initial hidden states
             .set(toId, { autoAlpha: 1 })
             .set(toId + ' .photo-wrap',     { clipPath: 'inset(0 0 100% 0)' })
             .set(toId + ' .photo-wrap img', { scale: 1 })
@@ -433,13 +446,20 @@
             .set(toId + ' .copy-text',      { opacity: 0, y: 16 })
             .set(toId + ' .cta-btn',        { opacity: 0, y: 12 })
             .set(toId + ' .cta-shine',      { xPercent: -200 })
-            .to(toId + ' .photo-wrap', { clipPath: 'inset(0 0 0% 0)', duration: 0.72, ease: 'expo.inOut' })
+
+            // Photo wipes down
+            .to(toId + ' .photo-wrap', { clipPath: 'inset(0 0 0% 0)', duration: 0.65, ease: 'expo.inOut' })
+            // Ken Burns (concurrent)
             .to(toId + ' .photo-wrap img', { scale: 1.08, duration: 6.5, ease: 'none' }, '<')
-            .to(toId + ' .category-badge', { opacity: 1, x: 0, duration: 0.33, ease: 'power2.out' }, '-=0.35')
-            .to(toId + ' .product-name',   { opacity: 1, y: 0, duration: 0.4,  ease: 'power2.out' }, '-=0.26')
-            .to(toId + ' .copy-text',      { opacity: 1, y: 0, duration: 0.34, ease: 'power2.out' }, '-=0.26')
-            .to(toId + ' .cta-btn',        { opacity: 1, y: 0, duration: 0.34, ease: 'back.out(1.8)' }, '-=0.2')
-            .to(toId + ' .cta-shine', { xPercent: 500, duration: 0.72, ease: 'power2.inOut' }, '+=0.1');
+
+            // Info elements: arrancan casi con la foto
+            .to(toId + ' .category-badge', { opacity: 1, x: 0, duration: 0.20, ease: 'power2.out' }, '-=0.55')
+            .to(toId + ' .product-name',   { opacity: 1, y: 0, duration: 0.26, ease: 'power2.out' }, '-=0.16')
+            .to(toId + ' .copy-text',      { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' }, '-=0.16')
+            .to(toId + ' .cta-btn',        { opacity: 1, y: 0, duration: 0.22, ease: 'back.out(1.8)' }, '-=0.12')
+
+            // CTA shine sweep
+            .to(toId + ' .cta-shine', { xPercent: 500, duration: 0.62, ease: 'power2.inOut' }, '+=0.08');
     }
 
     function setupExits() {
